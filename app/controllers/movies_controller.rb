@@ -7,6 +7,7 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @sort = params[:sort_titles] ? :sort_titles : (params[:sort_dates] ? :sort_dates : :no_sort)
     @all_ratings = Movie.all_ratings
     @selected_ratings = params[:ratings] ? params[:ratings].keys : []
     @movies = Movie.filter_by_ratings(@selected_ratings) #Movie.all
