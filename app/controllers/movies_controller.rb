@@ -10,7 +10,7 @@ class MoviesController < ApplicationController
     @sort = params[:sort_titles] == true ? :sort_titles : (params[:sort_dates] == true ? :sort_dates : :no_sort)
     @all_ratings = Movie.all_ratings
     @selected_ratings = params[:ratings] ? params[:ratings].keys : []
-    @movies = Movie.filter_by_ratings(@selected_ratings) #Movie.all
+    @movies = Movie.filter_by_ratings(@selected_ratings, @sort) #Movie.all
 #     if(@sort = :sort_titles)
 #       @movies = [] #.order("title")
 #     elsif (@sort = :sort_dates)
