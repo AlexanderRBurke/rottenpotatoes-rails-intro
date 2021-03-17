@@ -10,9 +10,11 @@
 %table#movies.table.table-striped.col-md-12
   %thead
     %tr
-      %th Movie Title
+      %th 
+      = link_to "Movie Title", movies_path(:sort_titles)
       %th Rating
-      %th Release Date
+      %th 
+      = link_to "Release Date", movies_path(:sort_dates)
       %th More Info
   %tbody
     - @movies.each do |movie|
