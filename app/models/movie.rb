@@ -1,5 +1,7 @@
 class Movie < ActiveRecord::Base
-  def all_ratings
-    return ['G','PG','PG-13','R']
+  class_methods do
+    def all_ratings
+      return ['G','PG','PG-13','R']
+    end
   end
 end
