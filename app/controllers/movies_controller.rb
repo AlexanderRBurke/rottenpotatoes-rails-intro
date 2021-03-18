@@ -7,15 +7,14 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @sort = params[:sort_titles] == true ? :sort_titles : (params[:sort_dates] == true ? :sort_dates : :no_sort)
+    #@sort = params[:sort_titles] == true ? :sort_titles : (params[:sort_dates] == true ? :sort_dates : :no_sort)
     @all_ratings = Movie.all_ratings
-    @selected_ratings = params[:ratings] ? params[:ratings].keys : []
-    @movies = Movie.filter_by_ratings(@selected_ratings, @sort) #Movie.all
-#     if(@sort = :sort_titles)
-#       @movies = [] #.order("title")
-#     elsif (@sort = :sort_dates)
-#       @movies.order("release_date")
-#     end
+    @selected_ratings_hash = selected_ratings_hash
+    @selected_ratings = selected_ratings
+    
+    @sort_key = sort_key
+    determine_hilite
+    @movies = Movie.filter_and_sort(@selected_ratings, @sort_key) #Movie.all
   end
 
   def new
@@ -51,5 +50,21 @@ class MoviesController < ApplicationController
   # This helps make clear which methods respond to requests, and which ones do not.
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
+  end
+  def selected_all_hash
+    Hash[Movie.all_ratings.map {|rating|[rating, "1"]}]
+  end
+  def selected_ratings_hash
+    params[:ratings] || selected_all_hash
+  end
+  def selected_ratings
+    selected_ratings_hash.keys
+  end
+  def sort_key
+    params[:sort] || :id 
+  end
+  def determine_hilite
+    @hilite_headers = {:title => "", :release_date => "", :id => ""}
+    @hilite_headers[sort_key] = "bg-warning hilite"
   end
 end
