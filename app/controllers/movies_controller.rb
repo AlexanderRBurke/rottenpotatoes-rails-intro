@@ -7,13 +7,16 @@ class MoviesController < ApplicationController
   end
 
   def index
-    #@sort = params[:sort_titles] == true ? :sort_titles : (params[:sort_dates] == true ? :sort_dates : :no_sort)
+    # Examine params and session headers
+    update_session_hash
+    render_or_redirect
+    determine_hilite
+    
     @all_ratings = Movie.all_ratings
     @selected_ratings_hash = selected_ratings_hash
     @selected_ratings = selected_ratings
-    
     @sort_key = sort_key
-    determine_hilite
+
     @movies = Movie.filter_and_sort(@selected_ratings, @sort_key) #Movie.all
   end
 
@@ -54,17 +57,33 @@ class MoviesController < ApplicationController
   def selected_all_hash
     Hash[Movie.all_ratings.map {|rating|[rating, "1"]}]
   end
+  
   def selected_ratings_hash
-    params[:ratings] || selected_all_hash
+    session[:ratings]
   end
+  
   def selected_ratings
     selected_ratings_hash.keys
   end
+  
   def sort_key
-    params[:sort] || :id 
+    session[:sort]
   end
+  
   def determine_hilite
     @hilite_headers = {:title => "", :release_date => "", :id => ""}
     @hilite_headers[sort_key] = "bg-warning hilite"
+  end
+  
+  def update_session_hash
+    session[:ratings] = params[:ratings] || session[:ratings] || selected_all_hash 
+    session[:sort] = params[:sort] || session[:sort] || :id
+  end
+  
+  def render_or_redirect
+      return unless (session[:ratings] and params[:ratings].nil?) or
+                    (session[:sort] and params[:sort].nil?)
+    flash.keep
+    redirect_to movies_path(:ratings => session[:ratings], :sort => session[:sort])
   end
 end
